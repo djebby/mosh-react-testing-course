@@ -27,7 +27,6 @@ describe('ProductDetail', () => {
 
   it('should render message if product not found', async () => {
     server.use(http.get('/products/1', () => HttpResponse.json(null)));
-
     render(<ProductDetail productId={1} />);
     const message = await screen.findByText(/not found/i);
     expect(message).toBeInTheDocument();
@@ -36,6 +35,15 @@ describe('ProductDetail', () => {
   it('should render an error for invalid productId', async () => {
     render(<ProductDetail productId={0} />);
     const message = await screen.findByText(/Invalid ProductId/i);
+    screen.debug();
+    expect(message).toBeInTheDocument();
+  });
+
+  it('should render an error if data fetching fails', async () => {
+    server.use(http.get('/products/1', () => HttpResponse.error()));
+    render(<ProductDetail productId={1} />);
+    const message = await screen.findByText(/Failed to fetch/i);
+    screen.debug();
     expect(message).toBeInTheDocument();
   });
 
