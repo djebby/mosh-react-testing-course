@@ -27,7 +27,6 @@ describe('TermsAndConditions', () => {
 
     expect(button).toBeInTheDocument();
     expect(button).toBeDisabled();
-    screen.debug();
   });
 
   it('should enable the button when the checkbox is checked', async () => {

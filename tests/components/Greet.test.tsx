@@ -6,7 +6,6 @@ describe('Greet', () => {
     // Act
     render(<Greet name={'john'} />);
     const heading = screen.getByRole('heading');
-    screen.debug();
     // Assert
     expect(heading).toBeInTheDocument();
     expect(heading).toHaveTextContent(/john/i);
@@ -16,7 +15,6 @@ describe('Greet', () => {
     // Act
     render(<Greet />);
     const button = screen.getByRole('button');
-    screen.debug();
     // Assert
     expect(button).toBeInTheDocument();
   });

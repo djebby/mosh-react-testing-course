@@ -36,7 +36,6 @@ describe('ProductDetail', () => {
   it('should render an error for invalid productId', async () => {
     render(<ProductDetail productId={0} />, { wrapper: AllProviders });
     const message = await screen.findByText(/Invalid ProductId/i);
-    screen.debug();
     expect(message).toBeInTheDocument();
   });
 
@@ -44,7 +43,6 @@ describe('ProductDetail', () => {
     server.use(http.get('/products/1', () => HttpResponse.error()));
     render(<ProductDetail productId={1} />, { wrapper: AllProviders });
     const message = await screen.findByText(/error/i);
-    screen.debug();
     expect(message).toBeInTheDocument();
   });
 

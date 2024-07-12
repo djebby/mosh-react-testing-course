@@ -17,7 +17,6 @@ describe('SearchBox', () => {
   it('should render an input field for searching', async () => {
     const { input } = renderComponent();
     expect(input).toBeInTheDocument();
-    screen.debug();
   });
 
   it('should call onChange when Enter is pressed', async () => {

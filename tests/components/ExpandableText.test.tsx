@@ -16,7 +16,6 @@ describe('ExpandableText', () => {
     expect(article).toBeInTheDocument();
     expect(article).toHaveTextContent(shortText);
 
-    screen.debug();
   });
 
 
@@ -25,7 +24,6 @@ describe('ExpandableText', () => {
     const article = screen.getByRole('article');
     const button = screen.getByRole('button');
 
-    screen.debug();
     expect(article).toBeInTheDocument();
     expect(article).toHaveTextContent(`${longText.substring(0, limit)}...`);
     expect(button).toBeInTheDocument();
@@ -41,12 +39,10 @@ describe('ExpandableText', () => {
     const user = userEvent.setup();
 
     await user.click(showMoreBtn); // expand
-    screen.debug();
     expect(article).toHaveTextContent(longText);
     
     const showLessBtn = screen.getByRole('button', { name: /less/i });
     await user.click(showLessBtn); // collapse
-    screen.debug();
     expect(article).toHaveTextContent(`${longText.substring(0, limit)}...`);
   });
 

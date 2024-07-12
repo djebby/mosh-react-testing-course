@@ -9,7 +9,6 @@ describe('UserList', () => {
 
     render(<UserList users={users} />);
     const paragraph = screen.getByText(/no users/i);
-    screen.debug();
 
     expect(paragraph).toBeInTheDocument();
     expect(paragraph).toHaveTextContent(/no users available./i);
@@ -24,7 +23,6 @@ describe('UserList', () => {
     ];
 
     render(<UserList users={users} />);
-    screen.debug();
 
     users.forEach(user => {
       const link = screen.getByRole('link', { name: user.name });
