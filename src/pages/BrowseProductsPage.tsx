@@ -116,7 +116,7 @@ function BrowseProducts() {
             ))}
           {!isProductsLoading &&
             visibleProducts.map((product) => (
-              <Table.Row key={product.id}>
+              <Table.Row key={product.id} data-testid="data-row">
                 <Table.Cell>{product.name}</Table.Cell>
                 <Table.Cell>${product.price}</Table.Cell>
                 <Table.Cell>

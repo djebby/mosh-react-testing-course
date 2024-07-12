@@ -13,8 +13,11 @@ describe('BrowseProductsPage', () => {
 
   beforeAll(() => {
     for (let i = 0; i < 3; i += 1) {
-      categories.push(db.category.create({ name: `Category ${i}` }));
-      products.push(db.product.create());
+      const category = db.category.create({ name: `Category ${i}` });
+      categories.push(category);
+      for (let j = 0; j < 2; j += 1) {
+        products.push(db.product.create({ categoryId: category.id }));
+      }
     }
   });
 
@@ -106,5 +109,57 @@ describe('BrowseProductsPage', () => {
     products.forEach((product) => {
       expect(screen.getByText(product.name)).toBeInTheDocument();
     });
+  });
+
+
+  it('should filter products by category', async () => {
+    // Arrange
+    const { getCategoriesSkeleton, getCategoriesComboBox } = renderComponent();
+    await waitForElementToBeRemoved(getCategoriesSkeleton);
+    const combobox = getCategoriesComboBox();
+    const user = userEvent.setup();
+    await user.click(combobox!);
+
+    // Act
+    const selectedCategory = categories[0];
+    const option = screen.getByRole('option', { name: selectedCategory.name });
+    await user.click(option);
+
+
+    // Assert
+    const products = db.product.findMany({
+      where: {
+        categoryId: { equals: selectedCategory.id }
+      }
+    });
+    const rows = screen.getAllByTestId('data-row');
+    expect(rows).toHaveLength(products.length);
+    for (let i = 0; i < rows.length; i +=  1) {
+      expect(rows[i]).toHaveTextContent(products[i].name);
+      expect(rows[i]).toHaveTextContent(String(products[i].price));
+    }
+  });
+
+
+  it('should render all products if All option is selected', async () => {
+    // Arrange
+    const { getCategoriesSkeleton, getCategoriesComboBox } = renderComponent();
+    await waitForElementToBeRemoved(getCategoriesSkeleton);
+    const combobox = getCategoriesComboBox();
+    const user = userEvent.setup();
+    await user.click(combobox!);
+
+    // Act
+    const option = screen.getByRole('option', { name: /all/i });
+    await user.click(option);
+
+    // Assert
+    const products = db.product.getAll();
+    const rows = screen.getAllByTestId('data-row');
+    expect(rows).toHaveLength(products.length);
+    for (let i = 0; i < rows.length; i +=  1) {
+      expect(rows[i]).toHaveTextContent(products[i].name);
+      expect(rows[i]).toHaveTextContent(String(products[i].price));
+    }
   });
 });
