@@ -2,7 +2,7 @@ import { render, screen, waitForElementToBeRemoved } from '@testing-library/reac
 import BrowseProducts from '../../src/pages/BrowseProductsPage';
 import { Theme } from '@radix-ui/themes';
 import userEvent from '@testing-library/user-event';
-import { db } from '../mocks/db';
+import { db, getProductsByCategory } from '../mocks/db';
 import { Category, Product } from '../../src/entities';
 import { CartProvider } from '../../src/providers/CartProvider';
 import { simulateDelay, simulateError } from '../utils/utils';
@@ -39,10 +39,34 @@ describe('BrowseProductsPage', () => {
       </CartProvider>
     );
 
+    const getCategoriesSkeleton = () => screen.queryByRole('progressbar', { name: /categories/i });
+    const getProductsSkeleton = () => screen.queryByRole('progressbar', { name: /products/i });
+    const getCategoriesComboBox = () => screen.queryByRole('combobox');
+    const selectCategory = async (name: RegExp | string) => {
+      await waitForElementToBeRemoved(getCategoriesSkeleton);
+      const combobox = getCategoriesComboBox();
+      const user = userEvent.setup();
+      await user.click(combobox!);
+
+      const option = screen.getByRole('option', { name });
+      await user.click(option);
+    };
+
+    const expectProductsToBeInTheDocument = (products: Product[]) => {
+      const rows = screen.getAllByTestId('data-row');
+      expect(rows).toHaveLength(products.length);
+      for (let i = 0; i < rows.length; i +=  1) {
+        expect(rows[i]).toHaveTextContent(products[i].name);
+        expect(rows[i]).toHaveTextContent(String(products[i].price));
+      }
+    }
+
     return {
-      getCategoriesSkeleton: () => screen.queryByRole('progressbar', { name: /categories/i }),
-      getProductsSkeleton: () => screen.queryByRole('progressbar', { name: /products/i }),
-      getCategoriesComboBox: () => screen.queryByRole('combobox'),
+      getCategoriesSkeleton,
+      getProductsSkeleton,
+      getCategoriesComboBox,
+      selectCategory,
+      expectProductsToBeInTheDocument,
     };
   };
   
@@ -113,53 +137,18 @@ describe('BrowseProductsPage', () => {
 
 
   it('should filter products by category', async () => {
-    // Arrange
-    const { getCategoriesSkeleton, getCategoriesComboBox } = renderComponent();
-    await waitForElementToBeRemoved(getCategoriesSkeleton);
-    const combobox = getCategoriesComboBox();
-    const user = userEvent.setup();
-    await user.click(combobox!);
-
-    // Act
+    const { selectCategory, expectProductsToBeInTheDocument } = renderComponent();
     const selectedCategory = categories[0];
-    const option = screen.getByRole('option', { name: selectedCategory.name });
-    await user.click(option);
-
-
-    // Assert
-    const products = db.product.findMany({
-      where: {
-        categoryId: { equals: selectedCategory.id }
-      }
-    });
-    const rows = screen.getAllByTestId('data-row');
-    expect(rows).toHaveLength(products.length);
-    for (let i = 0; i < rows.length; i +=  1) {
-      expect(rows[i]).toHaveTextContent(products[i].name);
-      expect(rows[i]).toHaveTextContent(String(products[i].price));
-    }
+    await selectCategory(selectedCategory.name);
+    const products = getProductsByCategory(selectedCategory.id);
+    expectProductsToBeInTheDocument(products);
   });
 
 
   it('should render all products if All option is selected', async () => {
-    // Arrange
-    const { getCategoriesSkeleton, getCategoriesComboBox } = renderComponent();
-    await waitForElementToBeRemoved(getCategoriesSkeleton);
-    const combobox = getCategoriesComboBox();
-    const user = userEvent.setup();
-    await user.click(combobox!);
-
-    // Act
-    const option = screen.getByRole('option', { name: /all/i });
-    await user.click(option);
-
-    // Assert
+    const { selectCategory, expectProductsToBeInTheDocument } = renderComponent();
+    await selectCategory(/all/i);
     const products = db.product.getAll();
-    const rows = screen.getAllByTestId('data-row');
-    expect(rows).toHaveLength(products.length);
-    for (let i = 0; i < rows.length; i +=  1) {
-      expect(rows[i]).toHaveTextContent(products[i].name);
-      expect(rows[i]).toHaveTextContent(String(products[i].price));
-    }
+    expectProductsToBeInTheDocument(products);
   });
 });
