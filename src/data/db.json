@@ -397,6 +397,12 @@
       "name": "Product 1",
       "price": 10,
       "categoryId": 2
+    },
+    {
+      "name": "BOITIER EXTERNE POUR DISQUE DUR INTERNE 2.5\"",
+      "price": 37,
+      "categoryId": 1,
+      "id": 65
     }
   ]
 }
