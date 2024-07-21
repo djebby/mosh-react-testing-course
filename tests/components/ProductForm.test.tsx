@@ -188,5 +188,32 @@ describe('ProductForm', () => {
     expect(toast).toHaveTextContent(/error/i);
   });
 
+  
+  it('should disable the submit button upon submission', async () => {
+    const { onSubmit, waitForFormToLoad } = renderComponent();
+    onSubmit.mockReturnValue(new Promise(() => {}));
+    const form = await waitForFormToLoad();
+    await form.fill(form.validData);
+    expect(form.submitButton).toBeDisabled();
+  });
+  
+  
+  it('should re-enable the submit button after successful submission', async () => {
+    const { onSubmit, waitForFormToLoad } = renderComponent();
+    onSubmit.mockResolvedValue({});
+    const form = await waitForFormToLoad();
+    await form.fill(form.validData);
+    expect(form.submitButton).not.toBeDisabled();
+  });
+  
+  
+  it('should re-enable the submit button after failed submission', async () => {
+    const { onSubmit, waitForFormToLoad } = renderComponent();
+    onSubmit.mockResolvedValue({});
+    const form = await waitForFormToLoad();
+    await form.fill(form.validData);
+    expect(form.submitButton).not.toBeDisabled();
+  });
+
 });
 
