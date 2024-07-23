@@ -1,9 +1,9 @@
-import { it, expect, describe } from 'vitest';
+import { it, describe } from 'vitest';
 import { db } from './mocks/db';
 
 describe('group', () => {
   it('should', () => {
-    const product = db.product.create();
+    db.product.create();
     db.product.create();
   });
 });

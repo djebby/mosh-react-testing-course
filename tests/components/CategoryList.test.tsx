@@ -1,9 +1,9 @@
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 import { db } from '../mocks/db';
 import { Category } from '../../src/entities';
-import ReduxProvider from '../../src/providers/ReduxProvider';
 import CategoryList from '../../src/components/CategoryList';
 import { simulateDelay, simulateError } from '../utils/utils';
+import AllProviders from '../AllProviders';
 
 describe('CategoryList', () => {
   const categories: Category[] = [];
@@ -23,11 +23,7 @@ describe('CategoryList', () => {
   });
 
   const renderComponent = () => {
-    render(
-      <ReduxProvider>
-        <CategoryList />
-      </ReduxProvider>
-    );
+    render(<CategoryList />, { wrapper: AllProviders });
   };
 
 
